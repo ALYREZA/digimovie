@@ -109,7 +109,7 @@ export default () => {
         <AuthContext.Provider value={authContext}>
           <NavigationContainer theme={scheme === 'dark' ? DarkTheme : MyTheme}>
             <Stack.Navigator>
-              {state.userToken == null ? (
+              {state.userToken != null ? (
                 <Stack.Screen
                   name="Login"
                   component={Login}
