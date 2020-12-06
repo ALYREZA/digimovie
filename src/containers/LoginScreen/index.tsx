@@ -1,23 +1,38 @@
 import React from 'react';
-import {View, Text, TouchableHighlight} from 'react-native';
+import {View, Text, TouchableHighlight, Alert} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 import {useInjectSaga} from '../../utils/injectSaga';
 import {useInjectReducer} from '../../utils/injectReducer';
 import reducer from './reducer';
 import saga from './saga';
+import InputText from '../../components/InputText';
+import Btn from '../../components/Button';
 const key = 'login';
 function Login({navigation}) {
   const {colors} = useTheme();
   useInjectReducer({key, reducer});
   useInjectSaga({key, saga});
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   return (
     <View
       style={{
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 10,
       }}>
-      <Text style={{color: colors.text, fontSize: 33}}>Login Screen</Text>
+      <InputText value={email} name="email" onChangeText={setEmail} />
+      <InputText
+        value={password}
+        secureTextEntry
+        name="password"
+        onChangeText={setPassword}
+      />
+      <Btn
+        title="login"
+        onPress={() => Alert.alert(`${email} \n${password}`)}
+      />
     </View>
   );
 }

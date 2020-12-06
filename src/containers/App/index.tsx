@@ -12,7 +12,7 @@ import Search from '../SearchScreen';
 import Movie from '../MovieScreen';
 import initialState from '../../initialState';
 
-const MyTheme = {
+const lightMe = {
   dark: false,
   colors: {
     primary: 'rgb(255, 45, 85)',
@@ -50,7 +50,7 @@ export default function Container() {
   return (
     <Provider store={store}>
       <AppearanceProvider>
-        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : MyTheme}>
+        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : lightMe}>
           <Stack.Navigator>
             {state == null ? (
               <Stack.Screen
