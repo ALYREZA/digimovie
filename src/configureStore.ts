@@ -4,6 +4,7 @@
 
 import {createStore, applyMiddleware, compose} from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import {composeWithDevTools} from 'redux-devtools-extension';
 import createReducer from './reducers';
 
 export default function configureStore(initialState = {}) {
@@ -17,12 +18,12 @@ export default function configureStore(initialState = {}) {
   // 2. routerMiddleware: Syncs the location/URL path to the state
   const middlewares = [sagaMiddleware];
 
-  const enhancers = [applyMiddleware(...middlewares)];
+  const enhancers = composeWithDevTools(applyMiddleware(...middlewares));
 
   const store = createStore(
     createReducer(),
     initialState,
-    composeEnhancers(...enhancers),
+    composeEnhancers(enhancers),
   );
 
   // Extensions

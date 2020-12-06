@@ -1,8 +1,7 @@
 import produce from 'immer';
-import initialState from '../../initialState';
 
 /* eslint-disable default-case, no-param-reassign */
-const appReducer = (state = initialState, action) =>
+const loginReducer = (state = {}, action) =>
   produce(state, (draft) => {
     switch (action.type) {
       case 'Global':
@@ -11,4 +10,4 @@ const appReducer = (state = initialState, action) =>
     }
   });
 
-export default appReducer;
+export default loginReducer;

@@ -10,6 +10,7 @@ import Category from '../CategoryScreen';
 import Login from '../LoginScreen';
 import Search from '../SearchScreen';
 import Movie from '../MovieScreen';
+import initialState from '../../initialState';
 
 const MyTheme = {
   dark: false,
@@ -22,42 +23,12 @@ const MyTheme = {
     notification: 'rgb(255, 69, 58)',
   },
 };
-
-const store = configureStore();
+const store = configureStore({global: initialState});
 const Stack = createStackNavigator();
-const AuthContext = React.createContext();
 
-export default () => {
+export default function Container() {
   const scheme = useColorScheme();
-  const [state, dispatch] = React.useReducer(
-    (prevState, action) => {
-      switch (action.type) {
-        case 'RESTORE_TOKEN':
-          return {
-            ...prevState,
-            userToken: action.token,
-            isLoading: false,
-          };
-        case 'SIGN_IN':
-          return {
-            ...prevState,
-            isSignout: false,
-            userToken: action.token,
-          };
-        case 'SIGN_OUT':
-          return {
-            ...prevState,
-            isSignout: true,
-            userToken: null,
-          };
-      }
-    },
-    {
-      isLoading: true,
-      isSignout: false,
-      userToken: null,
-    },
-  );
+  const [state, setState] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
@@ -67,83 +38,54 @@ export default () => {
       try {
         userToken = await AsyncStorage.getItem('userToken');
       } catch (e) {
-        // Restoring token failed
+        userToken = null;
       }
 
-      // After restoring token, we may need to validate it in production apps
-
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
-      dispatch({type: 'RESTORE_TOKEN', token: userToken});
+      setState(userToken);
     };
 
     bootstrapAsync();
   }, []);
 
-  const authContext = React.useMemo(
-    () => ({
-      signIn: async (data) => {
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        dispatch({type: 'SIGN_IN', token: 'dummy-auth-token'});
-      },
-      signOut: () => dispatch({type: 'SIGN_OUT'}),
-      signUp: async (data) => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        dispatch({type: 'SIGN_IN', token: 'dummy-auth-token'});
-      },
-    }),
-    [],
-  );
-
   return (
     <Provider store={store}>
       <AppearanceProvider>
-        <AuthContext.Provider value={authContext}>
-          <NavigationContainer theme={scheme === 'dark' ? DarkTheme : MyTheme}>
-            <Stack.Navigator>
-              {state.userToken != null ? (
+        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : MyTheme}>
+          <Stack.Navigator>
+            {state == null ? (
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{headerShown: false}}
+              />
+            ) : (
+              <>
                 <Stack.Screen
-                  name="Login"
-                  component={Login}
-                  options={{headerShown: false}}
+                  name="Home"
+                  component={Home}
+                  options={{title: 'Home'}}
                 />
-              ) : (
-                <>
-                  <Stack.Screen
-                    name="Home"
-                    component={Home}
-                    options={{title: 'Home'}}
-                  />
-                  <Stack.Screen
-                    name="Category"
-                    component={Category}
-                    options={{title: 'Category'}}
-                  />
+                <Stack.Screen
+                  name="Category"
+                  component={Category}
+                  options={{title: 'Category'}}
+                />
 
-                  <Stack.Screen
-                    name="Movie"
-                    component={Movie}
-                    options={{title: 'Movie'}}
-                  />
-                  <Stack.Screen
-                    name="Search"
-                    component={Search}
-                    options={{title: 'Search'}}
-                  />
-                </>
-              )}
-            </Stack.Navigator>
-          </NavigationContainer>
-        </AuthContext.Provider>
+                <Stack.Screen
+                  name="Movie"
+                  component={Movie}
+                  options={{title: 'Movie'}}
+                />
+                <Stack.Screen
+                  name="Search"
+                  component={Search}
+                  options={{title: 'Search'}}
+                />
+              </>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
       </AppearanceProvider>
     </Provider>
   );
-};
+}
