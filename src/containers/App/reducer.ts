@@ -5,9 +5,8 @@ import initialState from '../../initialState';
 const appReducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
-      case 'Global':
-        draft.userToken = null;
-        break;
+      default:
+        return draft;
     }
   });
 

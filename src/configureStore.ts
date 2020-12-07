@@ -1,11 +1,7 @@
-/**
- * Create the store with dynamic reducers
- */
-
 import {createStore, applyMiddleware, compose} from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {composeWithDevTools} from 'redux-devtools-extension';
-import createReducer from './reducers';
+import combination from './store';
 
 export default function configureStore(initialState = {}) {
   let composeEnhancers = compose;
@@ -21,7 +17,7 @@ export default function configureStore(initialState = {}) {
   const enhancers = composeWithDevTools(applyMiddleware(...middlewares));
 
   const store = createStore(
-    createReducer(),
+    combination,
     initialState,
     composeEnhancers(enhancers),
   );
@@ -35,7 +31,7 @@ export default function configureStore(initialState = {}) {
   /* istanbul ignore next */
   if (module.hot) {
     module.hot.accept(() => {
-      const nextRootReducer = require('./reducers').default;
+      const nextRootReducer = require('./store.ts').default;
       store.replaceReducer(nextRootReducer);
     });
   }

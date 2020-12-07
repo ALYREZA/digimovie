@@ -1,10 +1,10 @@
 const initialState = {
-  userToken: null,
-  loading: false,
-  error: false,
-  currentUser: false,
-  userData: {
-    repositories: false,
+  global: {},
+  user: {
+    loading: false,
+    token: null,
+    error: false,
+    errorMessage: null,
   },
 };
 

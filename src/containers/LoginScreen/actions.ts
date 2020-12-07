@@ -19,9 +19,11 @@ export function signInFailure(error: string) {
   };
 }
 
-export function signInRequest() {
+export function signInRequest(username: string, password: string) {
   return {
     type: REQUEST_SIGN_IN,
+    username,
+    password,
   };
 }
 

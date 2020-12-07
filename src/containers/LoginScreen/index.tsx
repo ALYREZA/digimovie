@@ -1,23 +1,40 @@
-import React, {memo} from 'react';
-import {View, Text, TouchableHighlight, Alert} from 'react-native';
-import {useTheme} from '@react-navigation/native';
+import React, {memo, useEffect} from 'react';
+import {View, Text} from 'react-native';
+import isEmpty from 'lodash/isEmpty';
 import {useInjectSaga} from '../../utils/injectSaga';
-import {useInjectReducer} from '../../utils/injectReducer';
-import reducer from './reducer';
 import saga from './saga';
 import InputText from '../../components/InputText';
 import Btn from '../../components/Button';
 import {compose} from 'redux';
+import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
-const key = 'login';
-export function Login({navigation, load}) {
-  const {colors} = useTheme();
-  useInjectReducer({key, reducer});
-  useInjectSaga({key, saga});
+import {StackActions} from '@react-navigation/native';
+import {signInRequest} from './actions';
+import {
+  makeSelectLoading,
+  makeSelectError,
+  makeSelectErrorMessage,
+  makeSelectToken,
+} from './selectors';
 
-  console.log({load});
-  const [email, setEmail] = React.useState('');
+const key = 'user';
+export function Login({
+  navigation,
+  loading,
+  token,
+  error,
+  errorMessage,
+  sendSignInRequest,
+}) {
+  console.log({loading, token, error, errorMessage});
+  const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  useInjectSaga({key, saga});
+  useEffect(() => {
+    if (!isEmpty(token)) {
+      navigation.dispatch(StackActions.replace('Tab', {screen: 'Home'}));
+    }
+  }, [token]);
   return (
     <View
       style={{
@@ -26,7 +43,7 @@ export function Login({navigation, load}) {
         alignItems: 'center',
         paddingHorizontal: 10,
       }}>
-      <InputText value={email} name="email" onChangeText={setEmail} />
+      <InputText value={username} name="email" onChangeText={setUsername} />
       <InputText
         value={password}
         secureTextEntry
@@ -34,17 +51,35 @@ export function Login({navigation, load}) {
         onChangeText={setPassword}
       />
       <Btn
+        loading={loading}
         title="login"
-        onPress={() => Alert.alert(`${email} \n${password}`)}
+        onPress={() => sendSignInRequest({username, password})}
       />
+      {!isEmpty(errorMessage) && (
+        <Text
+          style={{
+            color: 'red',
+            textAlign: 'center',
+            marginTop: 10,
+            fontSize: 22,
+          }}>
+          {errorMessage}
+        </Text>
+      )}
     </View>
   );
 }
-const mapStateToProps = (store) => {
+const mapStateToProps = createStructuredSelector({
+  loading: makeSelectLoading(),
+  token: makeSelectToken(),
+  error: makeSelectError(),
+  errorMessage: makeSelectErrorMessage(),
+});
+export function mapDispatchToProps(dispatch) {
   return {
-    load: store.login.loading,
+    sendSignInRequest: (data) =>
+      dispatch(signInRequest(data.username, data.password)),
   };
-};
-const withConnect = connect(mapStateToProps);
-
+}
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
 export default compose(withConnect, memo)(Login);

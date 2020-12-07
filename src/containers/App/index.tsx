@@ -2,13 +2,13 @@ import {Provider} from 'react-redux';
 import React from 'react';
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {AppearanceProvider, useColorScheme} from 'react-native-appearance';
 import configureStore from '../../configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Home from '../HomeScreen';
 import Category from '../CategoryScreen';
 import Login from '../LoginScreen';
-import Search from '../SearchScreen';
 import Movie from '../MovieScreen';
 import initialState from '../../initialState';
 
@@ -23,27 +23,68 @@ const lightMe = {
     notification: 'rgb(255, 69, 58)',
   },
 };
-const store = configureStore({global: initialState});
-const Stack = createStackNavigator();
-
-export default function Container() {
+const store = configureStore(initialState);
+const LoginStack = createStackNavigator();
+const AppStack = createStackNavigator();
+const TabStack = createBottomTabNavigator();
+function Guest() {
+  return (
+    <LoginStack.Navigator>
+      <LoginStack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
+      />
+    </LoginStack.Navigator>
+  );
+}
+function Tab() {
+  return (
+    <TabStack.Navigator
+      tabBarOptions={{
+        activeTintColor: '#e91e63',
+      }}>
+      <TabStack.Screen
+        name="Home"
+        options={{
+          tabBarLabel: 'Home',
+          title: 'Home',
+        }}
+        component={Home}
+      />
+      <TabStack.Screen
+        name="Category"
+        component={Category}
+        options={{
+          tabBarLabel: 'Category',
+          title: 'Category',
+        }}
+      />
+      <TabStack.Screen
+        name="Movie"
+        component={Movie}
+        options={{
+          tabBarLabel: 'Movie',
+          title: 'Movie',
+        }}
+      />
+    </TabStack.Navigator>
+  );
+}
+export default function App() {
   const scheme = useColorScheme();
   const [state, setState] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       let userToken;
-
       try {
         userToken = await AsyncStorage.getItem('userToken');
       } catch (e) {
         userToken = null;
       }
-
       setState(userToken);
     };
-
     bootstrapAsync();
   }, []);
 
@@ -51,39 +92,14 @@ export default function Container() {
     <Provider store={store}>
       <AppearanceProvider>
         <NavigationContainer theme={scheme === 'dark' ? DarkTheme : lightMe}>
-          <Stack.Navigator>
-            {state == null ? (
-              <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{headerShown: false}}
-              />
-            ) : (
-              <>
-                <Stack.Screen
-                  name="Home"
-                  component={Home}
-                  options={{title: 'Home'}}
-                />
-                <Stack.Screen
-                  name="Category"
-                  component={Category}
-                  options={{title: 'Category'}}
-                />
-
-                <Stack.Screen
-                  name="Movie"
-                  component={Movie}
-                  options={{title: 'Movie'}}
-                />
-                <Stack.Screen
-                  name="Search"
-                  component={Search}
-                  options={{title: 'Search'}}
-                />
-              </>
-            )}
-          </Stack.Navigator>
+          <AppStack.Navigator>
+            <AppStack.Screen name="Guest" component={Guest} />
+            <AppStack.Screen
+              name="Tab"
+              component={Tab}
+              options={{headerShown: false}}
+            />
+          </AppStack.Navigator>
         </NavigationContainer>
       </AppearanceProvider>
     </Provider>
