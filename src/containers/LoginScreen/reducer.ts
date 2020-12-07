@@ -1,12 +1,14 @@
 import produce from 'immer';
 
+export const initialState = {
+  loading: true,
+};
 /* eslint-disable default-case, no-param-reassign */
-const loginReducer = (state = {}, action) =>
+const loginReducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
-      case 'Global':
-        draft.userToken = null;
-        break;
+      default:
+        return draft;
     }
   });
 

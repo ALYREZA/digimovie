@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {View, Text, TouchableHighlight, Alert} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 import {useInjectSaga} from '../../utils/injectSaga';
@@ -7,11 +7,15 @@ import reducer from './reducer';
 import saga from './saga';
 import InputText from '../../components/InputText';
 import Btn from '../../components/Button';
+import {compose} from 'redux';
+import {connect} from 'react-redux';
 const key = 'login';
-function Login({navigation}) {
+export function Login({navigation, load}) {
   const {colors} = useTheme();
   useInjectReducer({key, reducer});
   useInjectSaga({key, saga});
+
+  console.log({load});
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   return (
@@ -36,5 +40,11 @@ function Login({navigation}) {
     </View>
   );
 }
+const mapStateToProps = (store) => {
+  return {
+    load: store.login.loading,
+  };
+};
+const withConnect = connect(mapStateToProps);
 
-export default Login;
+export default compose(withConnect, memo)(Login);
