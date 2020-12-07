@@ -194,7 +194,6 @@
 				B1045A5E7DB8336E6C2EDD4D /* Pods-Digimovie-tvOSTests.debug.xcconfig */,
 				9957B478D27685DB887E7E05 /* Pods-Digimovie-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

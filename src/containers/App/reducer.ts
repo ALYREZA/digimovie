@@ -4,11 +4,7 @@ import initialState from '../../initialState';
 /* eslint-disable default-case, no-param-reassign */
 const appReducer = (state = initialState, action) =>
   produce(state, (draft) => {
-    switch (action.type) {
-      case 'Global':
-        draft.userToken = null;
-        break;
-    }
+    return draft;
   });
 
 export default appReducer;

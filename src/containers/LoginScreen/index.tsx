@@ -1,19 +1,23 @@
-import React from 'react';
-import {View, Text, TouchableHighlight, Alert} from 'react-native';
-import {useTheme} from '@react-navigation/native';
+import React, {memo} from 'react';
+import {View} from 'react-native';
 import {useInjectSaga} from '../../utils/injectSaga';
+import {connect} from 'react-redux';
+import {compose} from 'redux';
 import {useInjectReducer} from '../../utils/injectReducer';
 import reducer from './reducer';
 import saga from './saga';
 import InputText from '../../components/InputText';
 import Btn from '../../components/Button';
-const key = 'login';
-function Login({navigation}) {
-  const {colors} = useTheme();
+import {signInRequest} from './actions';
+import {createStructuredSelector} from 'reselect';
+import {makeSelectLoading} from './selectors';
+const key = 'user';
+
+export function Login({navigation, sendSignInRequest, load}) {
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   useInjectReducer({key, reducer});
   useInjectSaga({key, saga});
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
   return (
     <View
       style={{
@@ -22,7 +26,7 @@ function Login({navigation}) {
         alignItems: 'center',
         paddingHorizontal: 10,
       }}>
-      <InputText value={email} name="email" onChangeText={setEmail} />
+      <InputText value={username} name="email" onChangeText={setUsername} />
       <InputText
         value={password}
         secureTextEntry
@@ -31,10 +35,22 @@ function Login({navigation}) {
       />
       <Btn
         title="login"
-        onPress={() => Alert.alert(`${email} \n${password}`)}
+        onPress={() => sendSignInRequest({username, password})}
       />
     </View>
   );
 }
 
-export default Login;
+const mapStateToProps = createStructuredSelector({
+  load: makeSelectLoading(),
+});
+
+export function mapDispatchToProps(dispatch) {
+  return {
+    sendSignInRequest: (data) =>
+      dispatch(signInRequest(data.username, data.password)),
+  };
+}
+
+const withConnect = connect(null, mapDispatchToProps);
+export default compose(withConnect, memo)(Login);

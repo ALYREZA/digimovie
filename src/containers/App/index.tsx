@@ -23,13 +23,14 @@ const lightMe = {
     notification: 'rgb(255, 69, 58)',
   },
 };
-const store = configureStore({global: initialState});
+const store = configureStore();
 const Stack = createStackNavigator();
 
 export default function Container() {
+  const navigationRef = React.useRef(null);
+  const stateOf = navigationRef.current?.getRootState();
   const scheme = useColorScheme();
   const [state, setState] = React.useState<string | null>(null);
-
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
@@ -50,7 +51,9 @@ export default function Container() {
   return (
     <Provider store={store}>
       <AppearanceProvider>
-        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : lightMe}>
+        <NavigationContainer
+          ref={navigationRef}
+          theme={scheme === 'dark' ? DarkTheme : lightMe}>
           <Stack.Navigator>
             {state == null ? (
               <Stack.Screen

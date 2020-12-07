@@ -1,11 +1,3 @@
-const initialState = {
-  userToken: null,
-  loading: false,
-  error: false,
-  currentUser: false,
-  userData: {
-    repositories: false,
-  },
-};
+const initialState = {};
 
 export default initialState;
