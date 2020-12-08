@@ -92,7 +92,6 @@ export default function App() {
               component={Tab}
               options={{headerShown: false}}
             />
-
             <AppStack.Screen
               name="Movie"
               component={Movie}

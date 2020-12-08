@@ -8,7 +8,7 @@ export default function Categories({items}) {
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}>
         {items.map(({name, id}) => {
-          return <Category key={id} title={name} id={id} />;
+          return <Category key={String(id)} title={name} id={id} />;
         })}
       </ScrollView>
     </SafeAreaView>
