@@ -47,6 +47,7 @@ function Tab() {
       <TabStack.Screen
         name="Home"
         options={{
+          headerTitle: 'home',
           tabBarLabel: 'Home',
           title: 'Home',
         }}
@@ -58,14 +59,6 @@ function Tab() {
         options={{
           tabBarLabel: 'Category',
           title: 'Category',
-        }}
-      />
-      <TabStack.Screen
-        name="Movie"
-        component={Movie}
-        options={{
-          tabBarLabel: 'Movie',
-          title: 'Movie',
         }}
       />
     </TabStack.Navigator>
@@ -98,6 +91,15 @@ export default function App() {
               name="Tab"
               component={Tab}
               options={{headerShown: false}}
+            />
+
+            <AppStack.Screen
+              name="Movie"
+              component={Movie}
+              options={{
+                title: 'Movie',
+                headerBackTitle: 'Categories',
+              }}
             />
           </AppStack.Navigator>
         </NavigationContainer>

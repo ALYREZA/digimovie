@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, TouchableHighlight} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
-function Movie({navigation}) {
+function Movie({navigation, route}) {
   const {colors} = useTheme();
-
+  const {title, id} = route.params;
+  useEffect(() => {
+    navigation.setOptions({title});
+  }, [title]);
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text style={{color: colors.text}}>Search Screen</Text>
