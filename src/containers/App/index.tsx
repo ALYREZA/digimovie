@@ -2,13 +2,13 @@ import {Provider} from 'react-redux';
 import React from 'react';
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {AppearanceProvider, useColorScheme} from 'react-native-appearance';
 import configureStore from '../../configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Home from '../HomeScreen';
 import Category from '../CategoryScreen';
 import Login from '../LoginScreen';
-import Search from '../SearchScreen';
 import Movie from '../MovieScreen';
 import initialState from '../../initialState';
 
@@ -23,70 +23,83 @@ const lightMe = {
     notification: 'rgb(255, 69, 58)',
   },
 };
-const store = configureStore();
-const Stack = createStackNavigator();
-
-export default function Container() {
-  const navigationRef = React.useRef(null);
-  const stateOf = navigationRef.current?.getRootState();
+const store = configureStore(initialState);
+const LoginStack = createStackNavigator();
+const AppStack = createStackNavigator();
+const TabStack = createBottomTabNavigator();
+function Guest() {
+  return (
+    <LoginStack.Navigator>
+      <LoginStack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
+      />
+    </LoginStack.Navigator>
+  );
+}
+function Tab() {
+  return (
+    <TabStack.Navigator
+      tabBarOptions={{
+        activeTintColor: '#e91e63',
+      }}>
+      <TabStack.Screen
+        name="Home"
+        options={{
+          headerTitle: 'home',
+          tabBarLabel: 'Home',
+          title: 'Home',
+        }}
+        component={Home}
+      />
+      <TabStack.Screen
+        name="Category"
+        component={Category}
+        options={{
+          tabBarLabel: 'Category',
+          title: 'Category',
+        }}
+      />
+    </TabStack.Navigator>
+  );
+}
+export default function App() {
   const scheme = useColorScheme();
   const [state, setState] = React.useState<string | null>(null);
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       let userToken;
-
       try {
         userToken = await AsyncStorage.getItem('userToken');
       } catch (e) {
         userToken = null;
       }
-
       setState(userToken);
     };
-
     bootstrapAsync();
   }, []);
 
   return (
     <Provider store={store}>
       <AppearanceProvider>
-        <NavigationContainer
-          ref={navigationRef}
-          theme={scheme === 'dark' ? DarkTheme : lightMe}>
-          <Stack.Navigator>
-            {state == null ? (
-              <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{headerShown: false}}
-              />
-            ) : (
-              <>
-                <Stack.Screen
-                  name="Home"
-                  component={Home}
-                  options={{title: 'Home'}}
-                />
-                <Stack.Screen
-                  name="Category"
-                  component={Category}
-                  options={{title: 'Category'}}
-                />
-
-                <Stack.Screen
-                  name="Movie"
-                  component={Movie}
-                  options={{title: 'Movie'}}
-                />
-                <Stack.Screen
-                  name="Search"
-                  component={Search}
-                  options={{title: 'Search'}}
-                />
-              </>
-            )}
-          </Stack.Navigator>
+        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : lightMe}>
+          <AppStack.Navigator>
+            <AppStack.Screen name="Guest" component={Guest} />
+            <AppStack.Screen
+              name="Tab"
+              component={Tab}
+              options={{headerShown: false}}
+            />
+            <AppStack.Screen
+              name="Movie"
+              component={Movie}
+              options={{
+                title: 'Movie',
+                headerBackTitle: 'Categories',
+              }}
+            />
+          </AppStack.Navigator>
         </NavigationContainer>
       </AppearanceProvider>
     </Provider>

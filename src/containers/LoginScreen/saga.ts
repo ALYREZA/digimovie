@@ -1,19 +1,7 @@
-import {call, put, select, takeLatest} from 'redux-saga/effects';
+import {call, put, takeLatest} from 'redux-saga/effects';
 import request from '../../utils/request';
 import {signInFailure, signInUserSuccessfully} from './actions';
 import {REQUEST_SIGN_IN} from './constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-async function saveOnStorage(token: string) {
-  let result;
-  try {
-    //await AsyncStorage.setItem('userToken', token);
-    result = 'token';
-  } catch (err) {
-    result = null;
-  }
-  return result;
-}
 
 export function* getUserToken({username, password}) {
   const requestURL = 'https://imdb.hriks.com/user/auth-token';
@@ -27,14 +15,9 @@ export function* getUserToken({username, password}) {
       },
       body: JSON.stringify({username, password}),
     });
-    const saveToken = yield call(saveOnStorage, repos.token);
-    if (saveToken) {
-      yield put(signInUserSuccessfully(repos.token));
-    } else {
-      yield put(signInFailure('can not save token on your phone'));
-    }
+    yield put(signInUserSuccessfully(repos.token));
   } catch (err) {
-    yield put(signInFailure('validation failed'));
+    yield put(signInFailure('try again'));
   }
 }
 

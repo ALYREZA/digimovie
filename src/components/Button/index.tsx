@@ -10,6 +10,7 @@ import {
 
 export interface Props {
   title: string;
+  loading?: boolean;
   onPress: () => void;
 }
 
@@ -34,17 +35,22 @@ const Btn: React.FC<Props> = (props) => {
             borderColor: bgcolor,
             borderRadius: 15,
           }}
+          disabled={props.loading}
           onPress={props.onPress}>
           <View
             style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
             <Text style={{color: colors.primary, fontSize: 25}}>
-              {props.title}
+              {props.loading ? 'Loading...' : props.title}
             </Text>
           </View>
         </TouchableHighlight>
       </View>
     </SafeAreaView>
   );
+};
+
+Btn.defaultProps = {
+  loading: false,
 };
 
 const styles = StyleSheet.create({

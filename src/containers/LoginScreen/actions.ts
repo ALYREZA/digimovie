@@ -1,9 +1,4 @@
-import {
-  SUCCESS_SIGN_IN,
-  SIGN_OUT,
-  FAILURE_SIGN_IN,
-  REQUEST_SIGN_IN,
-} from './constants';
+import {SUCCESS_SIGN_IN, FAILURE_SIGN_IN, REQUEST_SIGN_IN} from './constants';
 
 export function signInUserSuccessfully(token: string) {
   return {
