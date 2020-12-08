@@ -35,9 +35,6 @@ const loginReducer = (state = initialState, action) =>
         draft.loading = false;
         draft.errorMessage = action.error;
         break;
-      default:
-        return draft;
     }
   });
-};
 export default loginReducer;
